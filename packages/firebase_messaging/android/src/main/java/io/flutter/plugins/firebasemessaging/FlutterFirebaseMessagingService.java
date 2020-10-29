@@ -13,6 +13,8 @@ import android.os.Handler;
 import android.os.Process;
 import android.util.Log;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.clevertap.android.sdk.pushnotification.NotificationInfo;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import io.flutter.plugin.common.MethodChannel;
@@ -30,7 +32,6 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import com.clevertap.android.sdk.CleverTapAPI;
-import com.clevertap.android.sdk.NotificationInfo;
 import android.os.Bundle;
 
 public class FlutterFirebaseMessagingService extends FirebaseMessagingService {

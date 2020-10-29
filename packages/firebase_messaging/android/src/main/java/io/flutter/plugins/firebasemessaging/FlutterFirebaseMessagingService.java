@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import com.clevertap.android.sdk.CleverTapAPI;
+import com.clevertap.android.sdk.NotificationInfo;
+import android.os.Bundle;
 
 public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -85,6 +88,18 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
    */
   @Override
   public void onMessageReceived(final RemoteMessage remoteMessage) {
+    if (message.getData().size() > 0) {
+      Bundle extras = new Bundle();
+      for (Map.Entry<String, String> entry : message.getData().entrySet()) {
+        extras.putString(entry.getKey(), entry.getValue());
+      }
+
+      NotificationInfo info = CleverTapAPI.getNotificationInfo(extras);
+
+      if (info.fromCleverTap) {
+        CleverTapAPI.createNotification(getApplicationContext(), extras);
+      }
+    }
     // If application is running in the foreground use local broadcast to handle message.
     // Otherwise use the background isolate to handle message.
     if (isApplicationForeground(this)) {

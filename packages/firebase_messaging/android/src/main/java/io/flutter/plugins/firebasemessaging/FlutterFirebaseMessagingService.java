@@ -89,9 +89,9 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
   @Override
   public void onMessageReceived(final RemoteMessage remoteMessage) {
     try {
-          if (message.getData().size() > 0) {
+          if (remoteMessage.getData().size() > 0) {
       Bundle extras = new Bundle();
-      for (Map.Entry<String, String> entry : message.getData().entrySet()) {
+      for (Map.Entry<String, String> entry : remoteMessage.getData().entrySet()) {
         extras.putString(entry.getKey(), entry.getValue());
       }
 

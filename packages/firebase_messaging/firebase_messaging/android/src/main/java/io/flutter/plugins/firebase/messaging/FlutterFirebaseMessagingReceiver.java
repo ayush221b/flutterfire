@@ -11,6 +11,13 @@ import android.util.Log;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.firebase.messaging.RemoteMessage;
 import java.util.HashMap;
+import android.os.Bundle;
+
+import com.clevertap.android.sdk.CleverTapAPI;
+import com.clevertap.android.sdk.NotificationInfo;
+
+import java.util.List;
+import java.util.Map;
 
 public class FlutterFirebaseMessagingReceiver extends BroadcastReceiver {
   private static final String TAG = "FLTFireMsgReceiver";
@@ -25,6 +32,23 @@ public class FlutterFirebaseMessagingReceiver extends BroadcastReceiver {
 
     RemoteMessage remoteMessage = new RemoteMessage(intent.getExtras());
 
+    boolean _isFromClevertap = false;
+
+    if (remoteMessage.getData().size() > 0) {
+      Bundle extras = new Bundle();
+      for (Map.Entry<String, String> entry : remoteMessage.getData().entrySet()) {
+        extras.putString(entry.getKey(), entry.getValue());
+      }
+
+      NotificationInfo info = CleverTapAPI.getNotificationInfo(extras);
+
+      _isFromClevertap = info.fromCleverTap;
+
+      if (_isFromClevertap) {
+        CleverTapAPI.createNotification(context.getApplicationContext(), extras);
+      }
+    }
+
     // Store the RemoteMessage if the message contains a notification payload.
     if (remoteMessage.getNotification() != null) {
       notifications.put(remoteMessage.getMessageId(), remoteMessage);
@@ -34,7 +58,7 @@ public class FlutterFirebaseMessagingReceiver extends BroadcastReceiver {
     //  |-> ---------------------
     //      App in Foreground
     //   ------------------------
-    if (FlutterFirebaseMessagingUtils.isApplicationForeground(context)) {
+    if (FlutterFirebaseMessagingUtils.isApplicationForeground(context) && !_isFromClevertap) {
       Intent onMessageIntent = new Intent(FlutterFirebaseMessagingUtils.ACTION_REMOTE_MESSAGE);
       onMessageIntent.putExtra(FlutterFirebaseMessagingUtils.EXTRA_REMOTE_MESSAGE, remoteMessage);
       LocalBroadcastManager.getInstance(context).sendBroadcast(onMessageIntent);
